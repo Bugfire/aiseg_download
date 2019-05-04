@@ -144,7 +144,7 @@ const wrappedRun = async () => {
 
 const kick = async () => {
     await wrappedRun();
-    new cron.CronJob('0 0 4 * *', wrappedRun, null, true);
+    new cron.CronJob('0 0 4 * * *', wrappedRun, null, true);
 };
 
 kick();
