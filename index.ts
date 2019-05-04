@@ -106,19 +106,17 @@ const run = async () => {
         }
         const fileMatch = filename.match(/^(.+)_[0-9]+.csv$/);
         let localFilename = `${DATA_DIR}/${filename}`;
-        let fileWithDate = false;
         if (fileMatch !== null && fileMatch.length > 1) {
             const dataDir = `${DATA_DIR}/${fileMatch[1]}`
             if (fs.existsSync(dataDir) === false) {
                 fs.mkdirSync(dataDir);
             }
             localFilename = `${dataDir}/${filename}`;
-            fileWithDate = true;
         }
         let writeFile = false;
         if (fs.existsSync(localFilename)) {
-            const status = fs.statSync(localFilename);
-            if (!fileWithDate || status.size < files[filename].byteLength) {
+            const oldFile = fs.readFileSync(localFilename);
+            if (Buffer.compare(oldFile, files[filename]) !== 0) {
                 writeFile = true;
             }
         } else {
