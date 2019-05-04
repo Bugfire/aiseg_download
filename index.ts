@@ -128,7 +128,7 @@ const run = async () => {
 
 const kick = async () => {
     await run();
-    new cron.CronJob('* * 4 * *', run, null, true);
+    new cron.CronJob('0 0 4 * * *', run, null, true);
 };
 
 kick();
