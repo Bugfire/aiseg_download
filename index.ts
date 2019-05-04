@@ -82,12 +82,19 @@ const unpack = async (data: Buffer): Promise<{ [key: string]: Buffer }> => {
     });
 };
 
+const wait = async (sleepMs: number) => {
+    return new Promise<void>((resolve, reject) => {
+        setTimeout(resolve, sleepMs);
+    });
+};
+
 const run = async () => {
     const topResult = await fetch('/set/exectop2.cgi');
     const topMatch = topResult.toString().match(/NAME="csrftoken" VALUE="(\d+)"/);
     if (topMatch === null || topMatch.length <= 1) {
         throw new Error('Invalid response');
     }
+    await wait(1000);
     const csrfToken = topMatch[1];
     const zipResult = await fetch(`/set/exectop2.cgi?downType=1&csrftoken=${csrfToken}`);
     const files = await unpack(zipResult);
@@ -127,9 +134,17 @@ const run = async () => {
     console.log(`${dateStr}: Wrote ${numWroteFiles} files`);
 };
 
+const wrappedRun = async () => {
+    try {
+        await run();
+    } catch (ex) {
+        console.log(ex);
+    }
+};
+
 const kick = async () => {
-    await run();
-    new cron.CronJob('0 0 4 * * *', run, null, true);
+    await wrappedRun();
+    new cron.CronJob('0 0 4 * *', wrappedRun, null, true);
 };
 
 kick();
