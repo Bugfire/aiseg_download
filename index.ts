@@ -123,7 +123,8 @@ const run = async () => {
         }
     });
 
-    console.log(`wrote ${numWroteFiles} files`);
+    const dateStr = (new Date()).toISOString().replace('T', '.').split('.').slice(0, 2).join(' ');
+    console.log(`${dateStr}: Wrote ${numWroteFiles} files`);
 };
 
 const kick = async () => {
