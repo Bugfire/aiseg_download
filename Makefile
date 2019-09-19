@@ -1,19 +1,37 @@
-PKG_NAME=aiseg_download
+#
 
-build:
-		docker build -t ${PKG_NAME} .
+.PHONY: $(shell egrep -o ^[a-zA-Z_-]+: $(MAKEFILE_LIST) | sed 's/://')
 
-run:
-		docker rm ${PKG_NAME} || true
-		docker run -d --name ${PKG_NAME} --volume=`pwd`/config:/config --volume=`pwd`/data:/data ${PKG_NAME}
+default: help
 
-stop:
-		docker kill ${PKG_NAME} || true
-		docker rm ${PKG_NAME} || true
+build: ## Build docker
+	docker-compose build
 
-logs:
-		docker logs ${PKG_NAME}
+run: ## Run docker
+	docker-compose down || true
+	docker-compose up
 
-clean:
-		docker ps -a | grep -v "CONTAINER" | awk '{print $$1}' | xargs docker rm
-		docker images -a | grep "^<none>" | awk '{print $$3}' | xargs docker rmi
+stop: ## Stop docker
+	docker-compose down
+
+logs: ## Show docker logs
+	docker-compose logs
+
+lint: ## Run eslint
+	npm run lint
+
+dev: ## Run localy
+	npm run dev
+
+create-table: ## Create table
+	npx ts-node src/tables/create_table.ts ./
+
+drop-table: ## Drop table
+	npx ts-node src/tables/drop_table.ts ./
+
+clean: ## Clean docker container, images
+	docker ps -a | grep -v "CONTAINER" | awk '{print $$1}' | xargs docker rm
+	docker images -a | grep "^<none>" | awk '{print $$3}' | xargs docker rmi
+
+help: ## This help
+	@grep -Eh '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

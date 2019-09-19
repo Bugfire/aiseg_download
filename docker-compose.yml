@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  app:
+    image: bugfire/aiseg_download:latest
+    volumes:
+      # - "/share/Docker/Volumes/aiseg_download/config:/config:ro"
+      # - "/share/Work/Energy/data:/data"
+      - "./config:/config:ro"
+      - "./data:/data"
+    restart: always
+    cpu_shares: 20
+    mem_limit: "2048m"
+    build:
+      context: .
