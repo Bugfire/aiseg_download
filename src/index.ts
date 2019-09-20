@@ -1,5 +1,5 @@
 /**
- * @license aiseg_download v0.1
+ * @license aiseg_download
  * (c) 2019 Bugfire https://bugfire.dev/
  * License: MIT
  */
