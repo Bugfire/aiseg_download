@@ -6,7 +6,7 @@ COPY package*.json tsconfig.json /usr/src/app/
 COPY src /usr/src/app/src/
 WORKDIR /usr/src/app
 RUN npm install
-RUN npm run build 
+RUN npm run build
 
 ###
 
