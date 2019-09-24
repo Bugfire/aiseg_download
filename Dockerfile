@@ -10,14 +10,14 @@ RUN npm run build
 
 ###
 
-FROM node:10-alpine
+FROM alpine:latest
 
-COPY package*.json /usr/src/app/
+RUN apk add --no-cache nodejs
+
 WORKDIR /usr/src/app
-RUN npm install --production
-
-COPY --from=build /usr/src/app/dist/ /usr/src/app/dist/
+COPY package*.json /usr/src/app/
+COPY --from=build /usr/src/app/index.js /usr/src/app/
 
 VOLUME [ "/config", "/data" ]
 
-CMD [ "npm", "run", "start" ]
+CMD [ "node", "index.js", "/" ]
