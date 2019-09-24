@@ -14,4 +14,4 @@ services:
       options:
         syslog-address: "udp://192.168.13.11:514"
         syslog-format: "rfc3164"
-        tag: "remo_watch"
+        tag: "aiseg_download"
