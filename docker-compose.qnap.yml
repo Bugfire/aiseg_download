@@ -9,3 +9,9 @@ services:
     restart: always
     cpu_shares: 20
     mem_limit: "2048m"
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://192.168.13.11:514"
+        syslog-format: "rfc3164"
+        tag: "remo_watch"
