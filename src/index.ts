@@ -10,25 +10,14 @@ import * as path from "path";
 import * as stream from "stream";
 import * as unzipper from "unzipper";
 
-import { LoadConfig, ConfigType } from "./config";
-import { AisegConfig, AisegConfigType, Fetch } from "./aisegutil";
+import { Fetch } from "./common/aisegutil";
+import { LoadConfig } from "./myconfig";
 
 if (process.argv.length <= 2) {
   throw new Error("Invalid argument. Specify top directory of config.");
 }
 
-interface MyConfig {
-  aiseg: AisegConfig;
-}
-
-const MyConfigType: ConfigType = {
-  aiseg: AisegConfigType
-};
-
-const CONFIG = LoadConfig<MyConfig>(
-  fs.readFileSync(`${process.argv[2]}config/config.json`, "utf8"),
-  MyConfigType
-);
+const CONFIG = LoadConfig(`${process.argv[2]}config/config.json`);
 
 const DATA_DIR = `${process.argv[2]}data`;
 
