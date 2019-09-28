@@ -1,7 +1,8 @@
 {
-    "aiseg": {
-        "host": "AISEG_HOST_OR_IP_HERE",
-        "port": 80,
-        "auth": "AISEG_USER_HERE:AISEG_PASSWORD_HERE"
-    }
+  "aiseg": {
+    "host": "AISEG_HOST_OR_IP_HERE",
+    "port": 80,
+    "user": "AISEG_USER_HERE",
+    "password": "AISEG_PASSWORD_HERE"
+  }
 }
