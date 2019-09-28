@@ -6,10 +6,10 @@
 
 import * as fs from "fs";
 import * as cron from "cron";
-import * as http from "http";
 import * as path from "path";
 import * as stream from "stream";
 import * as unzipper from "unzipper";
+import axios from "axios";
 
 if (process.argv.length <= 2) {
   throw new Error("Invalid argument. Specify top directory of config.");
@@ -18,9 +18,9 @@ const DATA_DIR = `${process.argv[2]}data`;
 const CONFIG = JSON.parse(
   fs.readFileSync(`${process.argv[2]}config/config.json`, "utf8")
 );
-const HOST = CONFIG.aiseg.host;
-const PORT = CONFIG.aiseg.port;
-const AUTH = CONFIG.aiseg.auth;
+const HOST: string = CONFIG.aiseg.host;
+const PORT: number = CONFIG.aiseg.port;
+const AUTH: string = CONFIG.aiseg.auth;
 
 const createEmptyTransform = (): stream.Transform => {
   return new stream.Transform({
@@ -31,30 +31,17 @@ const createEmptyTransform = (): stream.Transform => {
 };
 
 const fetch = async (path: string): Promise<Buffer> => {
-  return new Promise<Buffer>((resolve, reject): void => {
-    const req = http.get(
-      {
-        host: HOST,
-        port: PORT,
-        path: path,
-        auth: AUTH
+  const auth = AUTH.split(":");
+  const res = await axios.get(
+    `http://${HOST}:${PORT}/${path}`, {
+      auth: {
+        username: auth[0],
+        password: auth[1]
       },
-      res => {
-        if (res.statusCode >= 400) {
-          return reject(new Error(`Status = ${res.statusCode}`));
-        }
-        const buftrans = createEmptyTransform();
-        res.pipe(buftrans);
-        const data: Buffer[] = [];
-        buftrans.on("data", chunk => data.push(chunk));
-        buftrans.on("end", () => {
-          //console.log('fetch ' + path + ' done');
-          resolve(Buffer.concat(data));
-        });
-      }
-    );
-    req.on("error", reject);
-  });
+      responseType: "arraybuffer"
+    }
+  );
+  return res.data as Buffer;
 };
 
 const unpack = async (data: Buffer): Promise<{ [key: string]: Buffer }> => {
@@ -157,7 +144,7 @@ const wrappedRun = async (): Promise<void> => {
 
 const kick = async (): Promise<void> => {
   await wrappedRun();
-  new cron.CronJob("0 0 4 * * *", wrappedRun, null, true);
+  new cron.CronJob("0 0 4 * * *", wrappedRun, undefined, true);
 };
 
 kick();
