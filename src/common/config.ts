@@ -6,6 +6,9 @@
 
 export type ConfigType = { [key: string]: ConfigType } | "number" | "string";
 
+const IS_DRYRUN = process.env["NODE_ENV"] === "DRYRUN";
+const IS_DEBUG = IS_DRYRUN || process.env["NODE_ENV"] === "DEBUG";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const typeOf = (obj: any): string => {
   if (Array.isArray(obj)) {
@@ -94,6 +97,9 @@ export function LoadConfig<T>(configString: string, configType: ConfigType): T {
   ValidateConfigRecursive(json, configType, errors, []);
   if (errors.length !== 0) {
     throw new Error(`Invalid Config\n${errors.join("\n")}`);
+  }
+  if (IS_DEBUG) {
+    console.log(JSON.stringify(json, null, 4));
   }
   return json as T;
 }
