@@ -17,9 +17,6 @@ const MyConfigType: ConfigType = {
   aiseg: AisegConfigType
 };
 
-export const LoadConfig = (filename: string) => {
-  return LC<MyConfig>(
-    fs.readFileSync(filename, "utf8"),
-    MyConfigType
-  );
+export const LoadConfig = (filename: string): MyConfig => {
+  return LC<MyConfig>(fs.readFileSync(filename, "utf8"), MyConfigType);
 };
