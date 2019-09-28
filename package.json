@@ -8,7 +8,8 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint --fix src/**/*.ts"
+    "lint:fix": "eslint --fix src/**/*.ts",
+    "test": "ts-node src/config_test.ts"
   },
   "author": "",
   "license": "MIT",

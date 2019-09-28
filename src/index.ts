@@ -11,16 +11,37 @@ import * as stream from "stream";
 import * as unzipper from "unzipper";
 import axios from "axios";
 
+import { LoadConfig, ConfigType } from "./config";
+
 if (process.argv.length <= 2) {
   throw new Error("Invalid argument. Specify top directory of config.");
 }
-const DATA_DIR = `${process.argv[2]}data`;
-const CONFIG = JSON.parse(
-  fs.readFileSync(`${process.argv[2]}config/config.json`, "utf8")
+
+interface AisegConfig {
+  aiseg: {
+    host: string;
+    port: number;
+    auth: string;
+  };
+}
+
+const AisegConfigType: ConfigType = {
+  aiseg: {
+    host: "string",
+    port: "number",
+    auth: "string"
+  }
+};
+
+const CONFIG = LoadConfig<AisegConfig>(
+  fs.readFileSync(`${process.argv[2]}config/config.json`, "utf8"),
+  AisegConfigType
 );
-const HOST: string = CONFIG.aiseg.host;
-const PORT: number = CONFIG.aiseg.port;
-const AUTH: string = CONFIG.aiseg.auth;
+
+const DATA_DIR = `${process.argv[2]}data`;
+const HOST = CONFIG.aiseg.host;
+const PORT = CONFIG.aiseg.port;
+const AUTH = CONFIG.aiseg.auth;
 
 const createEmptyTransform = (): stream.Transform => {
   return new stream.Transform({
