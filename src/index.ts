@@ -9,28 +9,20 @@ import * as cron from "cron";
 import * as path from "path";
 import * as stream from "stream";
 import * as unzipper from "unzipper";
-import axios from "axios";
 
 import { LoadConfig, ConfigType } from "./config";
+import { AisegConfig, AisegConfigType, Fetch } from "./aisegutil";
 
 if (process.argv.length <= 2) {
   throw new Error("Invalid argument. Specify top directory of config.");
 }
 
 interface MyConfig {
-  aiseg: {
-    host: string;
-    port: number;
-    auth: string;
-  };
+  aiseg: AisegConfig;
 }
 
 const MyConfigType: ConfigType = {
-  aiseg: {
-    host: "string",
-    port: "number",
-    auth: "string"
-  }
+  aiseg: AisegConfigType
 };
 
 const CONFIG = LoadConfig<MyConfig>(
@@ -39,9 +31,6 @@ const CONFIG = LoadConfig<MyConfig>(
 );
 
 const DATA_DIR = `${process.argv[2]}data`;
-const HOST = CONFIG.aiseg.host;
-const PORT = CONFIG.aiseg.port;
-const AUTH = CONFIG.aiseg.auth;
 
 const createEmptyTransform = (): stream.Transform => {
   return new stream.Transform({
@@ -49,18 +38,6 @@ const createEmptyTransform = (): stream.Transform => {
       callback(null, chunk);
     }
   });
-};
-
-const fetch = async (path: string): Promise<Buffer> => {
-  const auth = AUTH.split(":");
-  const res = await axios.get(`http://${HOST}:${PORT}/${path}`, {
-    auth: {
-      username: auth[0],
-      password: auth[1]
-    },
-    responseType: "arraybuffer"
-  });
-  return res.data as Buffer;
 };
 
 const unpack = async (data: Buffer): Promise<{ [key: string]: Buffer }> => {
@@ -103,15 +80,16 @@ const wait = async (sleepMs: number): Promise<void> => {
 };
 
 const run = async (): Promise<void> => {
-  const topResult = await fetch("/set/exectop2.cgi");
+  const topResult = await Fetch("/set/exectop2.cgi", CONFIG.aiseg);
   const topMatch = topResult.toString().match(/NAME="csrftoken" VALUE="(\d+)"/);
   if (topMatch === null || topMatch.length <= 1) {
     throw new Error("Invalid response");
   }
   await wait(1000);
   const csrfToken = topMatch[1];
-  const zipResult = await fetch(
-    `/set/exectop2.cgi?downType=1&csrftoken=${csrfToken}`
+  const zipResult = await Fetch(
+    `/set/exectop2.cgi?downType=1&csrftoken=${csrfToken}`,
+    CONFIG.aiseg
   );
   const files = await unpack(zipResult);
 
