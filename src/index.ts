@@ -32,15 +32,13 @@ const createEmptyTransform = (): stream.Transform => {
 
 const fetch = async (path: string): Promise<Buffer> => {
   const auth = AUTH.split(":");
-  const res = await axios.get(
-    `http://${HOST}:${PORT}/${path}`, {
-      auth: {
-        username: auth[0],
-        password: auth[1]
-      },
-      responseType: "arraybuffer"
-    }
-  );
+  const res = await axios.get(`http://${HOST}:${PORT}/${path}`, {
+    auth: {
+      username: auth[0],
+      password: auth[1]
+    },
+    responseType: "arraybuffer"
+  });
   return res.data as Buffer;
 };
 
