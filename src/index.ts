@@ -17,6 +17,8 @@ if (process.argv.length <= 2) {
   throw new Error("Invalid argument. Specify top directory of config.");
 }
 
+const IS_DRYRUN = process.env["NODE_ENV"] === "DRYRUN";
+const IS_DEBUG = IS_DRYRUN || process.env["NODE_ENV"] === "DEBUG";
 const CONFIG = LoadConfig(`${process.argv[2]}config/config.json`);
 
 const DATA_DIR = `${process.argv[2]}data`;
@@ -82,6 +84,10 @@ const run = async (): Promise<void> => {
   );
   const files = await unpack(zipResult);
 
+  if (IS_DEBUG) {
+    console.log(Object.keys(files));
+  }
+
   let numWroteFiles = 0;
   Object.keys(files).forEach(filename => {
     if (path.extname(filename) !== ".csv") {
@@ -107,7 +113,9 @@ const run = async (): Promise<void> => {
     }
     if (writeFile) {
       numWroteFiles++;
-      fs.writeFileSync(localFilename, files[filename]);
+      if (!IS_DRYRUN) {
+        fs.writeFileSync(localFilename, files[filename]);
+      }
     }
   });
 
@@ -130,7 +138,17 @@ const wrappedRun = async (): Promise<void> => {
 
 const kick = async (): Promise<void> => {
   await wrappedRun();
-  new cron.CronJob("0 0 4 * * *", wrappedRun, undefined, true);
+  if (!IS_DRYRUN) {
+    new cron.CronJob("0 0 4 * * *", wrappedRun, undefined, true);
+  }
 };
+
+if (IS_DRYRUN) {
+  console.log("Start as DRYRUN");
+} else if (IS_DEBUG) {
+  console.log("Start as DEBUG");
+} else {
+  console.log("Start");
+}
 
 kick();

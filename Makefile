@@ -20,8 +20,11 @@ logs: ## Show docker logs
 lint: ## Run eslint
 	npm run lint
 
+dryrun: ## Run localy dryrun
+	NODE_ENV=DRYRUN npm run dev
+
 dev: ## Run localy
-	npm run dev
+	NODE_ENV=DEBUG npm run dev
 
 create-table: ## Create table
 	npx ts-node src/tables/create_table.ts ./
