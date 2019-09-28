@@ -85,7 +85,7 @@ const run = async (): Promise<void> => {
   const files = await unpack(zipResult);
 
   if (IS_DEBUG) {
-    console.log(Object.keys(files));
+    console.log(`  Zip has ${Object.keys(files).length} files`);
   }
 
   let numWroteFiles = 0;
@@ -149,6 +149,9 @@ if (IS_DRYRUN) {
   console.log("Start as DEBUG");
 } else {
   console.log("Start");
+}
+if (IS_DEBUG) {
+  console.log(JSON.stringify(CONFIG, null, 4));
 }
 
 kick();
