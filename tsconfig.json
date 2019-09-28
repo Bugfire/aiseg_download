@@ -1,19 +1,19 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es2017",
-        "sourceMap": true,
-        "removeComments": true,
-        "strict": true,
-        "outDir": "dist",
-        "types": [
-            "node"
-        ]
-    },
-    "include": [
-        "src/**/*.ts"
-    ],
-    "exclude": [
-        "node_modules"
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2017",
+    "sourceMap": true,
+    "removeComments": true,
+    "strict": true,
+    "outDir": "dist",
+    "types": [
+      "node"
     ]
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
