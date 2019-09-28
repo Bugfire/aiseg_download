@@ -132,7 +132,11 @@ const wrappedRun = async (): Promise<void> => {
   try {
     await run();
   } catch (ex) {
-    console.error(ex);
+    if (!IS_DEBUG) {
+      console.error(ex.toString());
+    } else {
+      console.error(ex);
+    }
   }
 };
 
