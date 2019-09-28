@@ -17,7 +17,7 @@ if (process.argv.length <= 2) {
   throw new Error("Invalid argument. Specify top directory of config.");
 }
 
-interface AisegConfig {
+interface MyConfig {
   aiseg: {
     host: string;
     port: number;
@@ -25,7 +25,7 @@ interface AisegConfig {
   };
 }
 
-const AisegConfigType: ConfigType = {
+const MyConfigType: ConfigType = {
   aiseg: {
     host: "string",
     port: "number",
@@ -33,9 +33,9 @@ const AisegConfigType: ConfigType = {
   }
 };
 
-const CONFIG = LoadConfig<AisegConfig>(
+const CONFIG = LoadConfig<MyConfig>(
   fs.readFileSync(`${process.argv[2]}config/config.json`, "utf8"),
-  AisegConfigType
+  MyConfigType
 );
 
 const DATA_DIR = `${process.argv[2]}data`;
