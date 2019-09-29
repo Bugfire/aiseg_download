@@ -1,10 +1,12 @@
-//
+/**
+ * @license config_test.ts
+ * (c) 2019 Bugfire https://bugfire.dev/
+ * License: MIT
+ */
 
 import { LoadConfig, ConfigType } from "./config";
 
 /* eslint-disable @typescript-eslint/camelcase */
-
-//
 
 interface Test1 {
   aaa: {

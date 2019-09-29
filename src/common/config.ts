@@ -1,5 +1,5 @@
 /**
- * @license config
+ * @license config.ts
  * (c) 2019 Bugfire https://bugfire.dev/
  * License: MIT
  */
