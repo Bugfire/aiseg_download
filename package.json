@@ -2,7 +2,7 @@
   "name": "aiseg_download",
   "version": "0.1.0",
   "description": "",
-  "private" : true,
+  "private": true,
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src/index.ts ./",
