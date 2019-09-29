@@ -2,6 +2,7 @@
   "name": "aiseg_download",
   "version": "0.1.0",
   "description": "",
+  "private" : true,
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src/index.ts ./",
@@ -10,6 +11,10 @@
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
     "test": "ts-node src/config_test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://bugfire@github.com/Bugfire/aiseg_download.git"
   },
   "author": "",
   "license": "MIT",
@@ -20,11 +25,11 @@
   },
   "devDependencies": {
     "@types/cron": "^1.7.1",
-    "@types/node": "^12.7.5",
+    "@types/node": "^12.7.8",
     "@types/unzipper": "^0.10.0",
-    "@typescript-eslint/eslint-plugin": "^2.3.0",
-    "@typescript-eslint/parser": "^2.3.0",
-    "eslint": "^6.4.0",
+    "@typescript-eslint/eslint-plugin": "^2.3.1",
+    "@typescript-eslint/parser": "^2.3.1",
+    "eslint": "^6.5.0",
     "eslint-config-prettier": "^6.3.0",
     "eslint-plugin-prettier": "^3.1.1",
     "prettier": "^1.18.2",
