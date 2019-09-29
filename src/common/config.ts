@@ -4,21 +4,46 @@
  * License: MIT
  */
 
-export type ConfigType = { [key: string]: ConfigType } | "number" | "string";
+type ConfigTypeElement = 0 | "" | ConfigTypeDict;
+type ConfigTypeArray = [ConfigTypeElement];
+type ConfigTypeDict = { [key: string]: ConfigType };
+export type ConfigType = ConfigTypeElement | ConfigTypeArray;
 
 const IS_DRYRUN = process.env["NODE_ENV"] === "DRYRUN";
 const IS_DEBUG = IS_DRYRUN || process.env["NODE_ENV"] === "DEBUG";
 
+type TypeName = "array" | "object" | "number" | "string" | "unknown";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const typeOf = (obj: any): string => {
+const getTypeNameFromJsonObj = (obj: any): TypeName => {
   if (Array.isArray(obj)) {
     return "array";
   } else {
-    return typeof obj;
+    const typeName = typeof obj;
+    if (
+      typeName === "object" ||
+      typeName === "number" ||
+      typeName === "string"
+    ) {
+      return typeName;
+    }
   }
+  return "unknown";
 };
 
-const ArraySuffix = "_array";
+const getTypeNameFromConfigType = (obj: ConfigType): TypeName => {
+  if (Array.isArray(obj)) {
+    return "array";
+  } else if (typeof obj === "object") {
+    return "object";
+  } else if (obj === 0) {
+    return "number";
+  } else if (obj === "") {
+    return "string";
+  } else {
+    return "unknown";
+  }
+};
 
 function ValidateConfigRecursive(
   jsonObj: any,
@@ -26,69 +51,63 @@ function ValidateConfigRecursive(
   errors: string[],
   path: string[]
 ): any {
-  const jsonObjType = typeOf(jsonObj);
+  const typeNameFromJsonObj = getTypeNameFromJsonObj(jsonObj);
+  const typeNameFromConfigType = getTypeNameFromConfigType(configType);
   const jsonObjPath = path.join(".");
 
-  // primitive
-  if (typeof configType === "string") {
-    // "number" | "string"
-    if (jsonObjType !== configType) {
-      errors.push(`${jsonObjPath}: Expect ${configType}, but ${jsonObjType}`);
-      return undefined;
-    }
-    return jsonObj;
-  }
-
-  // object
-  if (jsonObjType !== "object") {
-    errors.push(`${jsonObjPath}: Except object, but ${jsonObjType}`);
+  if (typeNameFromJsonObj !== typeNameFromConfigType) {
+    errors.push(
+      `${jsonObjPath}: Except ${typeNameFromConfigType}, but ${typeNameFromJsonObj}`
+    );
     return undefined;
   }
 
-  const r: any = {};
-  const validKeys = Object.keys(configType);
-  for (const key of validKeys) {
-    const isArray = key.endsWith(ArraySuffix);
-    const configKeyType = configType[key];
-    if (!isArray) {
-      r[key] = ValidateConfigRecursive(
+  if (
+    typeNameFromConfigType === "string" ||
+    typeNameFromConfigType === "number"
+  ) {
+    return jsonObj;
+  }
+
+  if (typeNameFromConfigType === "array") {
+    const configTypeElement = (configType as ConfigTypeArray)[0];
+    const prevPath = path.concat();
+    const prevKey = prevPath.pop();
+    const array: any[] = [];
+    for (let i = 0; i < jsonObj.length; i++) {
+      array[i] = ValidateConfigRecursive(
+        jsonObj[i],
+        configTypeElement,
+        errors,
+        prevPath.concat(`${prevKey}[${i}]`)
+      );
+    }
+    return array;
+  }
+
+  if (typeNameFromConfigType === "object") {
+    const configKeys = Object.keys(configType);
+    const dict: any = {};
+    for (const key of configKeys) {
+      const configElementType = (configType as ConfigTypeDict)[key];
+      dict[key] = ValidateConfigRecursive(
         jsonObj[key],
-        configKeyType,
+        configElementType,
         errors,
         path.concat(key)
       );
-    } else {
-      const rawKey = key.substr(0, key.length - ArraySuffix.length);
-      const jsonKeyObj = jsonObj[rawKey];
-      const rawkeyPath = path.concat(rawKey);
-      const jsonKeyType = typeOf(jsonKeyObj);
-      if (jsonKeyType !== "array") {
-        errors.push(`${rawkeyPath}: Except array, but ${jsonKeyType}`);
-      } else {
-        const array: any[] = [];
-        for (let i = 0; i < jsonKeyObj.length; i++) {
-          array[i] = ValidateConfigRecursive(
-            jsonKeyObj[i],
-            configKeyType,
-            errors,
-            rawkeyPath.concat(`${i}`)
-          );
-        }
-        r[rawKey] = array;
+    }
+    /* eslint-enable @typescript-eslint/no-explicit-any */
+
+    for (const key of Object.keys(jsonObj)) {
+      if (typeof (configType as ConfigTypeDict)[key] === "undefined") {
+        errors.push(`${path.concat(key).join(".")}: Unknown key in config`);
       }
     }
+    return dict;
   }
-  /* eslint-enable @typescript-eslint/no-explicit-any */
-
-  for (const key of Object.keys(jsonObj)) {
-    const configKey =
-      typeOf(jsonObj[key]) === "array" ? key + ArraySuffix : key;
-    if (typeof configType[configKey] === "undefined") {
-      errors.push(`${path.concat(key).join(".")}: Unknown key in config`);
-    }
-  }
-
-  return r;
+  errors.push(`${jsonObjPath}: InternfalError`);
+  return undefined;
 }
 
 export function LoadConfig<T>(configString: string, configType: ConfigType): T {

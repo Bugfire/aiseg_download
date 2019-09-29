@@ -19,10 +19,10 @@ export interface AisegConfig {
 }
 
 export const AisegConfigType: ConfigType = {
-  host: "string",
-  port: "number",
-  user: "string",
-  password: "string"
+  host: "",
+  port: 0,
+  user: "",
+  password: ""
 };
 
 export const Fetch = async (

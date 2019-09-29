@@ -18,10 +18,10 @@ interface Test1 {
 
 const Test1Type: ConfigType = {
   aaa: {
-    str: "string",
-    num: "number"
+    str: "",
+    num: 0
   },
-  bbb: "string"
+  bbb: ""
 };
 
 const Test1Json = `
@@ -49,11 +49,13 @@ interface Test2 {
 }
 
 const Test2Type: ConfigType = {
-  aaa_array: {
-    str: "string",
-    num: "number"
-  },
-  bbb_array: "string"
+  aaa: [
+    {
+      str: "",
+      num: 0
+    }
+  ],
+  bbb: [""]
 };
 
 const Test2Json = `

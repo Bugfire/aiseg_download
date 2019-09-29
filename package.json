@@ -10,7 +10,7 @@
     "watch": "tsc --watch",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "eslint --fix 'src/**/*.ts'",
-    "test": "ts-node src/config_test.ts"
+    "test": "ts-node src/common/config_test.ts"
   },
   "repository": {
     "type": "git",
