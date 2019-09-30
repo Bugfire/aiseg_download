@@ -119,13 +119,7 @@ const run = async (): Promise<void> => {
     }
   });
 
-  const dateStr = new Date()
-    .toISOString()
-    .replace("T", ".")
-    .split(".")
-    .slice(0, 2)
-    .join(" ");
-  console.log(`${dateStr}: Wrote ${numWroteFiles} files`);
+  console.log(`Wrote ${numWroteFiles} files`);
 };
 
 const wrappedRun = async (): Promise<void> => {
