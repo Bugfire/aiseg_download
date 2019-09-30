@@ -7,6 +7,9 @@ default: help
 build: ## Build docker
 	docker-compose build
 
+push: ## Push docker
+	docker-compose push
+
 run: ## Run docker
 	docker-compose down || true
 	docker-compose up
