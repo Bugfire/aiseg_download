@@ -2,7 +2,7 @@ version: '2'
 
 services:
   app:
-    image: bugfire/aiseg_download:latest
+    image: bugfire/aiseg_download:0.1.4
     volumes:
       - "/share/Docker/Volumes/aiseg_download/config:/config:ro"
       - "/share/Work/Energy/data:/data"
