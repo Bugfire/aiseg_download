@@ -20,11 +20,7 @@ const getTypeNameFromJsonObj = (obj: any): TypeName => {
     return "array";
   } else {
     const typeName = typeof obj;
-    if (
-      typeName === "object" ||
-      typeName === "number" ||
-      typeName === "string"
-    ) {
+    if (typeName === "object" || typeName === "number" || typeName === "string") {
       return typeName;
     }
   }
@@ -45,27 +41,17 @@ const getTypeNameFromConfigType = (obj: ConfigType): TypeName => {
   }
 };
 
-function ValidateConfigRecursive(
-  jsonObj: any,
-  configType: ConfigType,
-  errors: string[],
-  path: string[]
-): any {
+function ValidateConfigRecursive(jsonObj: any, configType: ConfigType, errors: string[], path: string[]): any {
   const typeNameFromJsonObj = getTypeNameFromJsonObj(jsonObj);
   const typeNameFromConfigType = getTypeNameFromConfigType(configType);
   const jsonObjPath = path.join(".");
 
   if (typeNameFromJsonObj !== typeNameFromConfigType) {
-    errors.push(
-      `${jsonObjPath}: Except ${typeNameFromConfigType}, but ${typeNameFromJsonObj}`
-    );
+    errors.push(`${jsonObjPath}: Except ${typeNameFromConfigType}, but ${typeNameFromJsonObj}`);
     return undefined;
   }
 
-  if (
-    typeNameFromConfigType === "string" ||
-    typeNameFromConfigType === "number"
-  ) {
+  if (typeNameFromConfigType === "string" || typeNameFromConfigType === "number") {
     return jsonObj;
   }
 
@@ -75,12 +61,7 @@ function ValidateConfigRecursive(
     const prevKey = prevPath.pop();
     const array: any[] = [];
     for (let i = 0; i < jsonObj.length; i++) {
-      array[i] = ValidateConfigRecursive(
-        jsonObj[i],
-        configTypeElement,
-        errors,
-        prevPath.concat(`${prevKey}[${i}]`)
-      );
+      array[i] = ValidateConfigRecursive(jsonObj[i], configTypeElement, errors, prevPath.concat(`${prevKey}[${i}]`));
     }
     return array;
   }
@@ -90,12 +71,7 @@ function ValidateConfigRecursive(
     const dict: any = {};
     for (const key of configKeys) {
       const configElementType = (configType as ConfigTypeDict)[key];
-      dict[key] = ValidateConfigRecursive(
-        jsonObj[key],
-        configElementType,
-        errors,
-        path.concat(key)
-      );
+      dict[key] = ValidateConfigRecursive(jsonObj[key], configElementType, errors, path.concat(key));
     }
     /* eslint-enable @typescript-eslint/no-explicit-any */
 

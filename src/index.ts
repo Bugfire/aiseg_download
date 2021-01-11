@@ -27,7 +27,7 @@ const createEmptyTransform = (): stream.Transform => {
   return new stream.Transform({
     transform(chunk, encoding, callback): void {
       callback(null, chunk);
-    }
+    },
   });
 };
 
@@ -39,7 +39,7 @@ const unpack = async (data: Buffer): Promise<{ [key: string]: Buffer }> => {
     readableStreamBuffer.push(null);
     readableStreamBuffer
       .pipe(unzipper.Parse())
-      .on("entry", entry => {
+      .on("entry", (entry) => {
         if (entry.type !== "File") {
           entry.autodrain();
           return;
@@ -47,15 +47,15 @@ const unpack = async (data: Buffer): Promise<{ [key: string]: Buffer }> => {
         const buftrans = createEmptyTransform();
         entry.pipe(buftrans);
         const data: Buffer[] = [];
-        buftrans.on("data", chunk => data.push(chunk));
+        buftrans.on("data", (chunk) => data.push(chunk));
         buftrans.on("end", () => {
           results[path.basename(entry.path)] = Buffer.concat(data);
         });
       })
-      .on("warning", err => {
+      .on("warning", (err) => {
         reject(err);
       })
-      .on("error", err => {
+      .on("error", (err) => {
         reject(err);
       })
       .on("close", () => {
@@ -78,10 +78,7 @@ const run = async (): Promise<void> => {
   }
   await wait(1000);
   const csrfToken = topMatch[1];
-  const zipResult = await Fetch(
-    `/set/exectop2.cgi?downType=1&csrftoken=${csrfToken}`,
-    CONFIG.aiseg
-  );
+  const zipResult = await Fetch(`/set/exectop2.cgi?downType=1&csrftoken=${csrfToken}`, CONFIG.aiseg);
   const files = await unpack(zipResult);
 
   if (IS_DEBUG) {
@@ -89,7 +86,7 @@ const run = async (): Promise<void> => {
   }
 
   let numWroteFiles = 0;
-  Object.keys(files).forEach(filename => {
+  Object.keys(files).forEach((filename) => {
     if (path.extname(filename) !== ".csv") {
       return;
     }

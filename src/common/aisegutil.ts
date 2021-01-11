@@ -22,13 +22,10 @@ export const AisegConfigType: ConfigType = {
   host: "",
   port: 0,
   user: "",
-  password: ""
+  password: "",
 };
 
-export const Fetch = async (
-  path: string,
-  config: AisegConfig
-): Promise<Buffer> => {
+export const Fetch = async (path: string, config: AisegConfig): Promise<Buffer> => {
   const url = `http://${config.host}:${config.port}${path}`;
   if (IS_DEBUG) {
     console.log(`Fetching ${url}...`);
@@ -36,9 +33,9 @@ export const Fetch = async (
   const res = await axios.get(url, {
     auth: {
       username: config.user,
-      password: config.password
+      password: config.password,
     },
-    responseType: "arraybuffer"
+    responseType: "arraybuffer",
   });
   if (IS_DEBUG && res.data instanceof Buffer) {
     console.log(`  Done ${res.data.length} bytes`);

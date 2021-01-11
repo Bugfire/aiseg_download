@@ -14,7 +14,7 @@ interface MyConfig {
 }
 
 const MyConfigType: ConfigType = {
-  aiseg: AisegConfigType
+  aiseg: AisegConfigType,
 };
 
 export const LoadConfig = (filename: string): MyConfig => {
